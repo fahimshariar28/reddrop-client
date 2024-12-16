@@ -1,5 +1,6 @@
 import Header from "@/components/Shared/Header";
 import "./globals.css";
+import Footer from "@/components/Shared/Footer";
 
 export const metadata = {
   title: "Rokto Bondhu",
@@ -11,6 +12,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <Header />
       <body>{children}</body>
+      <Footer />
     </html>
   );
 }
