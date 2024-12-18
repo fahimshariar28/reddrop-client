@@ -271,41 +271,24 @@ export default function Register() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Address
-              </label>
-              <input
-                {...register("presentAddress", {
-                  required: "Present address is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                placeholder="Address"
-              />
-              {errors.presentAddress && (
-                <p className="text-red-500 text-sm">
-                  {errors.presentAddress.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Upazila <span className="text-red-500">*</span>
+                Division <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("presentUpazila", {
-                  required: "Present upazila is required",
+                {...register("presentDivision", {
+                  required: "Present division is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
-                <option value="">Select Upazila</option>
-                {upazilas.map((upazila, index) => (
-                  <option key={index} value={upazila}>
-                    {upazila}
+                <option value="">Select Division</option>
+                {divisions.map((division, index) => (
+                  <option key={index} value={division}>
+                    {division}
                   </option>
                 ))}
               </select>
-              {errors.presentUpazila && (
+              {errors.presentDivision && (
                 <p className="text-red-500 text-sm">
-                  {errors.presentUpazila.message}
+                  {errors.presentDivision.message}
                 </p>
               )}
             </div>
@@ -334,24 +317,41 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Division <span className="text-red-500">*</span>
+                Upazila <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("presentDivision", {
-                  required: "Present division is required",
+                {...register("presentUpazila", {
+                  required: "Present upazila is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
-                <option value="">Select Division</option>
-                {divisions.map((division, index) => (
-                  <option key={index} value={division}>
-                    {division}
+                <option value="">Select Upazila</option>
+                {upazilas.map((upazila, index) => (
+                  <option key={index} value={upazila}>
+                    {upazila}
                   </option>
                 ))}
               </select>
-              {errors.presentDivision && (
+              {errors.presentUpazila && (
                 <p className="text-red-500 text-sm">
-                  {errors.presentDivision.message}
+                  {errors.presentUpazila.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Address
+              </label>
+              <input
+                {...register("presentAddress", {
+                  required: "Present address is required",
+                })}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                placeholder="Address"
+              />
+              {errors.presentAddress && (
+                <p className="text-red-500 text-sm">
+                  {errors.presentAddress.message}
                 </p>
               )}
             </div>
@@ -374,41 +374,24 @@ export default function Register() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Address
-              </label>
-              <input
-                {...register("permanentAddress", {
-                  required: "Permanent address is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                placeholder="Address"
-              />
-              {errors.permanentAddress && (
-                <p className="text-red-500 text-sm">
-                  {errors.permanentAddress.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Upazila <span className="text-red-500">*</span>
+                Division <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("permanentUpazila", {
-                  required: "Permanent upazila is required",
+                {...register("permanentDivision", {
+                  required: "Permanent division is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
-                <option value="">Select Upazila</option>
-                {upazilas.map((upazila, index) => (
-                  <option key={index} value={upazila}>
-                    {upazila}
+                <option value="">Select Division</option>
+                {divisions.map((division, index) => (
+                  <option key={index} value={division}>
+                    {division}
                   </option>
                 ))}
               </select>
-              {errors.permanentUpazila && (
+              {errors.permanentDivision && (
                 <p className="text-red-500 text-sm">
-                  {errors.permanentUpazila.message}
+                  {errors.permanentDivision.message}
                 </p>
               )}
             </div>
@@ -437,24 +420,41 @@ export default function Register() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">
-                Division <span className="text-red-500">*</span>
+                Upazila <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("permanentDivision", {
-                  required: "Permanent division is required",
+                {...register("permanentUpazila", {
+                  required: "Permanent upazila is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
-                <option value="">Select Division</option>
-                {divisions.map((division, index) => (
-                  <option key={index} value={division}>
-                    {division}
+                <option value="">Select Upazila</option>
+                {upazilas.map((upazila, index) => (
+                  <option key={index} value={upazila}>
+                    {upazila}
                   </option>
                 ))}
               </select>
-              {errors.permanentDivision && (
+              {errors.permanentUpazila && (
                 <p className="text-red-500 text-sm">
-                  {errors.permanentDivision.message}
+                  {errors.permanentUpazila.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Address
+              </label>
+              <input
+                {...register("permanentAddress", {
+                  required: "Permanent address is required",
+                })}
+                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+                placeholder="Address"
+              />
+              {errors.permanentAddress && (
+                <p className="text-red-500 text-sm">
+                  {errors.permanentAddress.message}
                 </p>
               )}
             </div>
