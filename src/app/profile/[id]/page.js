@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { profiles } from "@/data/profiles";
+import RequestModal from "@/components/Request/RequestModal";
 
 export default function ProfileView({ params }) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const profile = profiles.find((p) => p._id === params.id);
 
   useEffect(() => {
@@ -30,7 +33,10 @@ export default function ProfileView({ params }) {
           />
           <h1 className="text-xl font-bold">{profile.name}</h1>
         </div>
-        <button className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800">
+        <button
+          className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
+          onClick={() => setIsModalOpen(true)}
+        >
           Request
         </button>
       </div>
@@ -76,6 +82,12 @@ export default function ProfileView({ params }) {
           </div>
         </div>
       </div>
+
+      <RequestModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        profileName={profile.name}
+      />
     </div>
   );
 }
