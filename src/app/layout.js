@@ -1,6 +1,7 @@
 import Header from "@/components/Shared/Header";
 import "./globals.css";
 import Footer from "@/components/Shared/Footer";
+import Providers from "@/lib/Providers/Providers";
 
 export const metadata = {
   title: "Rokto Bondhu",
@@ -9,10 +10,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <Header />
-      <body>{children}</body>
-      <Footer />
-    </html>
+    <Providers>
+      <html lang="en">
+        <Header />
+        <body>{children}</body>
+        <Footer />
+      </html>
+    </Providers>
   );
 }
