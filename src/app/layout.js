@@ -4,8 +4,8 @@ import Footer from "@/components/Shared/Footer";
 import Providers from "@/lib/Providers/Providers";
 
 export const metadata = {
-  title: "Rokto Bondhu",
-  description: "Rokto Bondhu is a blood donation platform.",
+  title: "Red Drop",
+  description: "Red Drop is a blood donation platform.",
 };
 
 export default function RootLayout({ children }) {

@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Search Results | Rokto Bondhu",
+  title: "Search Results | Red Drop",
 };
 
 const registerLayout = ({ children }) => {
