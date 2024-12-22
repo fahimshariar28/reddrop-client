@@ -148,7 +148,7 @@ export default function Header() {
               {!user && (
                 <Link
                   href="/login"
-                  className="bg-white hover:bg-red-600 text-black hover:text-white font-semibold py-2 px-4 rounded transition-colors outline outline-2 outline-black hover:outline-none"
+                  className="bg-transparent hover:bg-red-600 text-black hover:text-white font-semibold py-2 px-4 rounded transition-colors outline outline-2 outline-black hover:outline-none"
                 >
                   Login
                 </Link>
@@ -240,7 +240,7 @@ export default function Header() {
               {!user && (
                 <Link
                   href="/login"
-                  className="bg-white hover:bg-red-600 text-black hover:text-white font-semibold py-2 px-4 rounded transition-colors outline outline-2 outline-black hover:outline-none"
+                  className="bg-transparent hover:bg-red-600 text-black hover:text-white font-semibold py-2 px-4 rounded transition-colors outline outline-2 outline-black hover:outline-none"
                 >
                   Login
                 </Link>
