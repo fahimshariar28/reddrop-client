@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FaFacebookF, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaFacebookF, FaLinkedin } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -39,15 +39,24 @@ export default function Footer() {
 
         {/* Social Icons */}
         <div className="flex space-x-4">
-          <a href="#" aria-label="Facebook" className="hover:text-red-600">
+          <Link
+            rel="noopener noreferrer"
+            target="_blank"
+            href="https://www.facebook.com/RedDrop.Official/"
+            aria-label="Facebook"
+            className="hover:text-red-600"
+          >
             <FaFacebookF />
-          </a>
-          <a href="#" aria-label="Twitter" className="hover:text-red-600">
-            <FaTwitter />
-          </a>
-          <a href="#" aria-label="Instagram" className="hover:text-red-600">
-            <FaInstagram />
-          </a>
+          </Link>
+          <Link
+            rel="noopener noreferrer"
+            target="_blank"
+            href="https://www.linkedin.com/company/red-drop"
+            aria-label="LinkedIn"
+            className="hover:text-red-600"
+          >
+            <FaLinkedin />
+          </Link>
         </div>
       </div>
     </footer>
