@@ -12,9 +12,11 @@ export default function RootLayout({ children }) {
   return (
     <Providers>
       <html lang="en">
-        <Header />
-        <body>{children}</body>
-        <Footer />
+        <body>
+          <Header />
+          {children}
+          <Footer />
+        </body>
       </html>
     </Providers>
   );
