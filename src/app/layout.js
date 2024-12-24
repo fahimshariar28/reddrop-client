@@ -2,6 +2,7 @@ import Header from "@/components/Shared/Header";
 import "./globals.css";
 import Footer from "@/components/Shared/Footer";
 import Providers from "@/lib/Providers/Providers";
+import { Toaster } from "react-hot-toast";
 
 export const metadata = {
   title: "Red Drop",
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
           <Header />
           {children}
           <Footer />
+          <Toaster />
         </body>
       </html>
     </Providers>
