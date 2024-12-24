@@ -9,6 +9,7 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
   // TODO: Replace with actual user data
   const user = false;
@@ -129,19 +130,43 @@ export default function Header() {
               {/* //TODO: Show Profile Picture instead of svg */}
               {/* Profile */}
               {user && (
-                <Link href="/profile">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="44"
-                    height="44"
-                    fill="#000000"
-                    className="rounded-full bg-gray-300 p-2"
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="focus:outline-none"
                   >
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M12 14c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z" />
-                  </svg>
-                </Link>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="44"
+                      height="44"
+                      fill="#000000"
+                      className="rounded-full bg-gray-300 p-2"
+                    >
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M12 14c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z" />
+                    </svg>
+                  </button>
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          // TODO: Implement logout functionality
+                          console.log("Logout clicked");
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Login */}
@@ -221,19 +246,43 @@ export default function Header() {
               {/* //TODO: Show Profile Picture instead of svg */}
               {/* Profile */}
               {user && (
-                <Link href="/profile">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="44"
-                    height="44"
-                    fill="#000000"
-                    className="rounded-full bg-gray-300 p-2"
+                <div className="relative">
+                  <button
+                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                    className="focus:outline-none"
                   >
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M12 14c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z" />
-                  </svg>
-                </Link>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="44"
+                      height="44"
+                      fill="#000000"
+                      className="rounded-full bg-gray-300 p-2"
+                    >
+                      <circle cx="12" cy="8" r="4" />
+                      <path d="M12 14c-5 0-9 2.5-9 6v1h18v-1c0-3.5-4-6-9-6z" />
+                    </svg>
+                  </button>
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1">
+                      <Link
+                        href="/profile"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={() => {
+                          // TODO: Implement logout functionality
+                          console.log("Logout clicked");
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Login */}
