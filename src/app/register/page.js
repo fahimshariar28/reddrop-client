@@ -87,7 +87,7 @@ export default function Register() {
       division: data.division,
       district: data.district,
       upazila: data.upazila,
-      homeAddress: data.address,
+      address: data.address,
     };
 
     try {
