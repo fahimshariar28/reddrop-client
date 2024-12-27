@@ -1,114 +1,105 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-
-const divisions = [
-  "Dhaka",
-  "Chattogram",
-  "Khulna",
-  "Sylhet",
-  "Barishal",
-  "Rajshahi",
-  "Mymensingh",
-];
-
-const districts = [
-  "Dhaka",
-  "Chattogram",
-  "Khulna",
-  "Sylhet",
-  "Barishal",
-  "Rajshahi",
-  "Mymensingh",
-];
-
-const upazilas = [
-  "Dhaka",
-  "Chattogram",
-  "Khulna",
-  "Sylhet",
-  "Barishal",
-  "Rajshahi",
-  "Mymensingh",
-];
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import { checkEmail } from "@/services/actions/checkEmail";
+import { checkUsername } from "@/services/actions/checkUsername";
+import { userRegister } from "@/services/actions/userRegister";
+import { getDivision } from "@/services/actions/location/getDivision";
+import { getDistrict } from "@/services/actions/location/getDistrict";
+import { getUpazila } from "@/services/actions/location/getUpazila";
 
 export default function Register() {
   const {
     register,
     handleSubmit,
-    setValue,
-    watch,
     formState: { errors },
   } = useForm();
 
-  const [emailValue, setEmailValue] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [emailResponse, setEmailResponse] = useState(null);
+  const router = useRouter();
 
-  const email = watch("email");
+  // Division
+  const [divisions, setDivisions] = useState([]);
+  const [selectedDivisionId, setSelectedDivisionId] = useState("");
 
-  const [isSameAddress, setIsSameAddress] = useState(false);
+  // District
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrictId, setSelectedDistrictId] = useState("");
 
+  // Upazila
+  const [upazilas, setUpazilas] = useState([]);
+
+  // Fetch divisions data
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      // Check if the email passes validation
-      const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-      if (email && emailRegex.test(email)) {
-        setEmailValue(email); // Trigger API call for valid email
+    const fetchDivisions = async () => {
+      const divisions = await getDivision();
+
+      setDivisions(divisions.data);
+    };
+    fetchDivisions();
+  }, []);
+
+  // Fetch districts data
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (selectedDivisionId) {
+        const districts = await getDistrict(selectedDivisionId);
+        setDistricts(districts.data.districts);
       }
-    }, 500); // Debounce for 500ms
+    };
+    fetchDistricts();
+  }, [selectedDivisionId]);
 
-    return () => clearTimeout(timeout); // Clear timeout on unmount or change
-  }, [email]);
-
-  // Trigger API Call
+  // Fetch upazilas data
   useEffect(() => {
-    if (emailValue) {
-      setIsLoading(true);
-      // Example API Call
-      fetch(`/api/check-email?email=${emailValue}`) //TODO: Change this to your API endpoint
-        .then((res) => res.json())
-        .then((data) => {
-          setEmailResponse(data);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        })
-        .finally(() => setIsLoading(false));
+    const fetchUpazilas = async () => {
+      if (selectedDistrictId) {
+        const upazilas = await getUpazila(selectedDistrictId);
+        setUpazilas(upazilas.data);
+      }
+    };
+    fetchUpazilas();
+  }, [selectedDistrictId]);
+
+  const onSubmit = async (data) => {
+    // Check if email already exists
+    const emailDuplicate = await checkEmail(data.email);
+    if (emailDuplicate?.data?.exists === true) {
+      toast.error("Email already exists");
+      return;
     }
-  }, [emailValue]);
 
-  const onSubmit = (data) => {
-    console.log(data);
-  };
+    // Check if username already exists
+    const usernameDuplicate = await checkUsername(data.username);
+    if (usernameDuplicate?.data?.exists === true) {
+      toast.error("Username already exists");
+      return;
+    }
 
-  // Watch Present Address fields
-  const presentAddress = {
-    address: watch("presentAddress"),
-    upazila: watch("presentUpazila"),
-    district: watch("presentDistrict"),
-    division: watch("presentDivision"),
-  };
+    delete data.consent;
 
-  // Handle checkbox change
-  const handleSameAddressChange = (e) => {
-    const checked = e.target.checked;
-    setIsSameAddress(checked);
+    data.plasma = data.plasma === "true";
 
-    if (checked) {
-      // Auto-fill Permanent Address fields
-      setValue("permanentAddress", presentAddress.address);
-      setValue("permanentUpazila", presentAddress.upazila);
-      setValue("permanentDistrict", presentAddress.district);
-      setValue("permanentDivision", presentAddress.division);
-    } else {
-      // Clear Permanent Address fields
-      setValue("permanentAddress", "");
-      setValue("permanentUpazila", "");
-      setValue("permanentDistrict", "");
-      setValue("permanentDivision", "");
+    data.address = {
+      division: data.division,
+      district: data.district,
+      upazila: data.upazila,
+      homeAddress: data.address,
+    };
+
+    try {
+      const res = await userRegister(data);
+      console.log(res);
+      if (res?.success === "true") {
+        toast.success(`${res?.message}, Please login to continue`);
+        // Redirect to login page
+        router.push("/login");
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -155,13 +146,22 @@ export default function Register() {
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
             )}
+          </div>
 
-            {/* API Response Feedback */}
-            {isLoading && <p className="text-yellow-600 text-sm">Checking </p>}
-            {emailResponse && (
-              <p className="text-green-500 text-sm">
-                Response: {emailResponse.message}
-              </p>
+          {/* Username */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Username <span className="text-red-500">*</span>
+            </label>
+            <input
+              {...register("username", {
+                required: "Username is required",
+              })}
+              className="mt-1 p-2 border border-gray-300 rounded-md w-full"
+              placeholder="Username"
+            />
+            {errors.username && (
+              <p className="text-red-500 text-sm">{errors.username.message}</p>
             )}
           </div>
 
@@ -171,22 +171,24 @@ export default function Register() {
               Phone Number <span className="text-red-500">*</span>
             </label>
             <input
-              {...register("phoneNumber", {
+              {...register("number", {
                 required: "Phone number is required",
+                pattern: {
+                  value: /^[0-9]{11}$/,
+                  message: "Phone number must be 11 digits",
+                },
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              placeholder="Phone Number"
+              placeholder="01999999999"
             />
-            {errors.phoneNumber && (
-              <p className="text-red-500 text-sm">
-                {errors.phoneNumber.message}
-              </p>
+            {errors.number && (
+              <p className="text-red-500 text-sm">{errors.number.message}</p>
             )}
           </div>
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medi</p>um text-gray-700">
               Password <span className="text-red-500">*</span>
             </label>
             <input
@@ -262,11 +264,36 @@ export default function Register() {
                 </p>
               )}
             </div>
+
+            {/* Radio for Plasma value will be true of false */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Willing to donate Plasma
+              </label>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  {...register("plasma", {
+                    required: "Plasma is required",
+                  })}
+                  value="true"
+                />
+                <label>Yes</label>
+                <input
+                  type="radio"
+                  {...register("plasma", {
+                    required: "Plasma is required",
+                  })}
+                  value="false"
+                />
+                <label>No</label>
+              </div>
+            </div>
           </div>
 
-          {/* Present Address */}
+          {/*  Address */}
           <h3 className="text-lg font-semibold text-gray-700 mt-4">
-            Present Address <span className="text-red-500">*</span>
+            Address <span className="text-red-500">*</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -274,21 +301,29 @@ export default function Register() {
                 Division <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("presentDivision", {
-                  required: "Present division is required",
+                {...register("division", {
+                  required: "Division is required",
                 })}
+                onChange={(e) => {
+                  const selectedDivision = divisions.find(
+                    (div) => div.name === e.target.value
+                  );
+                  setSelectedDivisionId(
+                    selectedDivision ? selectedDivision._id : ""
+                  );
+                }}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
                 <option value="">Select Division</option>
-                {divisions.map((division, index) => (
-                  <option key={index} value={division}>
-                    {division}
+                {divisions.map(({ _id, name }) => (
+                  <option key={_id} value={name}>
+                    {name}
                   </option>
                 ))}
               </select>
-              {errors.presentDivision && (
+              {errors.division && (
                 <p className="text-red-500 text-sm">
-                  {errors.presentDivision.message}
+                  {errors.division.message}
                 </p>
               )}
             </div>
@@ -297,21 +332,29 @@ export default function Register() {
                 District <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("presentDistrict", {
-                  required: "Present district is required",
+                {...register("district", {
+                  required: "District is required",
                 })}
+                onChange={(e) => {
+                  const selectedDistrict = districts.find(
+                    (dist) => dist.district === e.target.value
+                  );
+                  setSelectedDistrictId(
+                    selectedDistrict ? selectedDistrict.districtId : ""
+                  );
+                }}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
                 <option value="">Select District</option>
-                {districts.map((district, index) => (
-                  <option key={index} value={district}>
+                {districts.map(({ districtId, district }) => (
+                  <option key={districtId} value={district}>
                     {district}
                   </option>
                 ))}
               </select>
-              {errors.presentDistrict && (
+              {errors.district && (
                 <p className="text-red-500 text-sm">
-                  {errors.presentDistrict.message}
+                  {errors.district.message}
                 </p>
               )}
             </div>
@@ -320,22 +363,20 @@ export default function Register() {
                 Upazila <span className="text-red-500">*</span>
               </label>
               <select
-                {...register("presentUpazila", {
-                  required: "Present upazila is required",
+                {...register("upazila", {
+                  required: "Upazila is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               >
                 <option value="">Select Upazila</option>
-                {upazilas.map((upazila, index) => (
-                  <option key={index} value={upazila}>
-                    {upazila}
+                {upazilas.map(({ _id, name }) => (
+                  <option key={_id} value={name}>
+                    {name}
                   </option>
                 ))}
               </select>
-              {errors.presentUpazila && (
-                <p className="text-red-500 text-sm">
-                  {errors.presentUpazila.message}
-                </p>
+              {errors.upazila && (
+                <p className="text-red-500 text-sm">{errors.upazila.message}</p>
               )}
             </div>
             <div>
@@ -343,119 +384,14 @@ export default function Register() {
                 Address
               </label>
               <input
-                {...register("presentAddress", {
-                  required: "Present address is required",
+                {...register("address", {
+                  required: "Address is required",
                 })}
                 className="mt-1 p-2 border border-gray-300 rounded-md w-full"
                 placeholder="Address"
               />
-              {errors.presentAddress && (
-                <p className="text-red-500 text-sm">
-                  {errors.presentAddress.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Permanent Address */}
-          <h3 className="text-lg font-semibold text-gray-700 mt-4">
-            Permanent Address
-          </h3>
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={isSameAddress}
-              onChange={handleSameAddressChange}
-            />
-            <label className="text-sm font-medium text-gray-700">
-              Same as Present Address
-            </label>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Division <span className="text-red-500">*</span>
-              </label>
-              <select
-                {...register("permanentDivision", {
-                  required: "Permanent division is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              >
-                <option value="">Select Division</option>
-                {divisions.map((division, index) => (
-                  <option key={index} value={division}>
-                    {division}
-                  </option>
-                ))}
-              </select>
-              {errors.permanentDivision && (
-                <p className="text-red-500 text-sm">
-                  {errors.permanentDivision.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                District <span className="text-red-500">*</span>
-              </label>
-              <select
-                {...register("permanentDistrict", {
-                  required: "Permanent district is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              >
-                <option value="">Select District</option>
-                {districts.map((district, index) => (
-                  <option key={index} value={district}>
-                    {district}
-                  </option>
-                ))}
-              </select>
-              {errors.permanentDistrict && (
-                <p className="text-red-500 text-sm">
-                  {errors.permanentDistrict.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Upazila <span className="text-red-500">*</span>
-              </label>
-              <select
-                {...register("permanentUpazila", {
-                  required: "Permanent upazila is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              >
-                <option value="">Select Upazila</option>
-                {upazilas.map((upazila, index) => (
-                  <option key={index} value={upazila}>
-                    {upazila}
-                  </option>
-                ))}
-              </select>
-              {errors.permanentUpazila && (
-                <p className="text-red-500 text-sm">
-                  {errors.permanentUpazila.message}
-                </p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Address
-              </label>
-              <input
-                {...register("permanentAddress", {
-                  required: "Permanent address is required",
-                })}
-                className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-                placeholder="Address"
-              />
-              {errors.permanentAddress && (
-                <p className="text-red-500 text-sm">
-                  {errors.permanentAddress.message}
-                </p>
+              {errors.address && (
+                <p className="text-red-500 text-sm">{errors.address.message}</p>
               )}
             </div>
           </div>
