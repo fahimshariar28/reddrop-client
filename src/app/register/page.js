@@ -159,6 +159,7 @@ export default function Register() {
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               placeholder="Username"
+              autoComplete="username"
             />
             {errors.username && (
               <p className="text-red-500 text-sm">{errors.username.message}</p>
@@ -180,6 +181,7 @@ export default function Register() {
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               placeholder="01999999999"
+              autoComplete="tel"
             />
             {errors.number && (
               <p className="text-red-500 text-sm">{errors.number.message}</p>
