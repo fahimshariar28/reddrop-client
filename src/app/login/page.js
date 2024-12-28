@@ -35,6 +35,7 @@ export default function Login() {
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               placeholder="Email"
+              autoComplete="email"
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -57,6 +58,7 @@ export default function Login() {
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               placeholder="Password"
+              autoComplete="current-password"
             />
           </div>
 
