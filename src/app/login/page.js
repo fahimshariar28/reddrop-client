@@ -1,6 +1,10 @@
 "use client";
 
 import { useForm } from "react-hook-form";
+import { userLogin } from "@/services/actions/userLogin";
+import toast from "react-hot-toast";
+import { useRouter, useSearchParams } from "next/navigation";
+import { storeUserInfo } from "@/services/actions/authServices";
 
 export default function Login() {
   const {
@@ -9,8 +13,23 @@ export default function Login() {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
+
+  const onSubmit = async (data) => {
+    try {
+      const res = await userLogin(data);
+      if (res.success === "true") {
+        storeUserInfo(res.data.accessToken);
+        toast.success("Login successful");
+        router.push(redirect);
+      } else {
+        toast.error(res.errorMessage);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -20,25 +39,24 @@ export default function Login() {
           Login
         </h2>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-          {/* Email */}
+          {/* Email or Username */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              Email <span className="text-red-500">*</span>
+              Email or Username
+              <span className="text-red-500">*</span>
             </label>
             <input
-              {...register("email", {
-                required: "Email is required",
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
-                  message: "Invalid email address",
-                },
+              {...register("emailOrUsername", {
+                required: "Email or Username is required",
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
-              placeholder="Email"
+              placeholder="Email or Username"
               autoComplete="email"
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            {errors.emailOrUsername && (
+              <p className="text-red-500 text-sm">
+                {errors.emailOrUsername.message}
+              </p>
             )}
           </div>
 
