@@ -188,7 +188,7 @@ export default function Register() {
 
           {/* Password */}
           <div>
-            <label className="block text-sm font-medi</p>um text-gray-700">
+            <label className="block text-sm font-medium</p>um text-gray-700">
               Password <span className="text-red-500">*</span>
             </label>
             <input
@@ -202,6 +202,7 @@ export default function Register() {
               })}
               className="mt-1 p-2 border border-gray-300 rounded-md w-full"
               placeholder="Password"
+              autoComplete="current-password"
             />
           </div>
 
