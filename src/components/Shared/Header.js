@@ -69,6 +69,7 @@ export default function Header() {
                 alt="logo"
                 width={120}
                 height={120}
+                style={{ width: "auto", height: "auto" }}
               />
             </Link>
           </div>

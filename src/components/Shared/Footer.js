@@ -13,6 +13,7 @@ export default function Footer() {
             width={150}
             height={150}
             alt="logo"
+            style={{ width: "auto", height: "auto" }}
           />
         </Link>
         <div className="flex items-center md:items-end gap-5">
