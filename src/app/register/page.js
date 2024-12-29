@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { checkEmail } from "@/services/actions/checkEmail";
 import { checkUsername } from "@/services/actions/checkUsername";
@@ -11,6 +11,8 @@ import { userRegister } from "@/services/actions/userRegister";
 import { getDivision } from "@/services/actions/location/getDivision";
 import { getDistrict } from "@/services/actions/location/getDistrict";
 import { getUpazila } from "@/services/actions/location/getUpazila";
+import { userLogin } from "@/services/actions/userLogin";
+import { storeUserInfo } from "@/services/actions/authServices";
 
 export default function Register() {
   const {
@@ -20,6 +22,8 @@ export default function Register() {
   } = useForm();
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/";
 
   // Division
   const [divisions, setDivisions] = useState([]);
@@ -92,11 +96,18 @@ export default function Register() {
 
     try {
       const res = await userRegister(data);
-      console.log(res);
       if (res?.success === "true") {
-        toast.success(`${res?.message}, Please login to continue`);
-        // Redirect to login page
-        router.push("/login");
+        toast.success(`${res?.message}`);
+        const userRes = await userLogin({
+          emailOrUsername: data.email,
+          password: data.password,
+        });
+        if (userRes.success === "true") {
+          storeUserInfo(userRes.data.accessToken);
+          router.push(redirect);
+        } else {
+          toast.error(userRes.errorMessage);
+        }
       }
     } catch (error) {
       console.error(error);
