@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
+import { getUserInfo, removeUserInfo } from "@/services/actions/authServices";
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,8 +12,14 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-  // TODO: Replace with actual user data
-  const user = false;
+  const user = getUserInfo();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    removeUserInfo();
+    router.refresh();
+  };
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -157,10 +164,7 @@ export default function Header() {
                         My Profile
                       </Link>
                       <button
-                        onClick={() => {
-                          // TODO: Implement logout functionality
-                          console.log("Logout clicked");
-                        }}
+                        onClick={handleLogout}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Logout
@@ -273,10 +277,7 @@ export default function Header() {
                         My Profile
                       </Link>
                       <button
-                        onClick={() => {
-                          // TODO: Implement logout functionality
-                          console.log("Logout clicked");
-                        }}
+                        onClick={handleLogout}
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       >
                         Logout
