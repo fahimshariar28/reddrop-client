@@ -1,10 +1,8 @@
-"use client";
-
 import { FiEdit, FiHeart, FiCheck } from "react-icons/fi";
-import Marquee from "react-fast-marquee";
 import Image from "next/image";
 import heroImage from "@/assets/HomePage/hero-section.png";
 import Link from "next/link";
+import Collaborators from "@/components/Home/Collaborators";
 
 export default function Home() {
   return (
@@ -48,22 +46,7 @@ export default function Home() {
       </section>
 
       {/* Collaborators Section */}
-      <section className="px-6 py-12">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-2xl font-semibold mb-8 text-center">
-            Our Collaborators
-          </h2>
-          <Marquee pauseOnHover={true} gradient={true} speed={40}>
-            {[1, 2, 3, 4, 5].map((item) => (
-              <div key={item} className="mx-8">
-                <div className="w-32 h-32 bg-gray-200 rounded-lg flex items-center justify-center">
-                  LOGO
-                </div>
-              </div>
-            ))}
-          </Marquee>
-        </div>
-      </section>
+      <Collaborators />
 
       {/* How to Get Blood Section */}
       <section className="px-6 py-12">
