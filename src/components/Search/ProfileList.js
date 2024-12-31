@@ -24,13 +24,13 @@ export default function ProfileList({ profiles, profilesPerPage }) {
     <>
       {currentProfiles.map((profile) => (
         <div
-          key={profile.name}
+          key={profile._id}
           className="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm"
         >
           <div className="flex items-center space-x-4">
             <div className="flex-shrink-0">
               <Image
-                src={profile.image}
+                src={profile.profilePicture}
                 alt={`${profile.name}'s avatar`}
                 width={40}
                 height={40}
@@ -41,7 +41,7 @@ export default function ProfileList({ profiles, profilesPerPage }) {
             <h3 className="font-medium">{profile.name}</h3>
           </div>
           <Link
-            href={`/profile/${profile._id}`}
+            href={`/profile/${profile.username}`}
             className="bg-white hover:bg-red-600 text-black hover:text-white py-2 px-2 rounded-lg border border-black hover:border-red-600 transition-colors"
           >
             View Profile
