@@ -3,6 +3,11 @@
 import Image from "next/image";
 import findBlood from "@/assets/FindBlood/findBlood.png";
 import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { getDivision } from "@/services/actions/location/getDivision";
+import { getDistrict } from "@/services/actions/location/getDistrict";
+import { getUpazila } from "@/services/actions/location/getUpazila";
+import { useRouter } from "next/navigation";
 
 export default function RecipientForm() {
   const {
@@ -11,9 +16,57 @@ export default function RecipientForm() {
     formState: { errors },
   } = useForm();
 
+  const router = useRouter();
+
+  // Division
+  const [divisions, setDivisions] = useState([]);
+  const [selectedDivisionId, setSelectedDivisionId] = useState("");
+
+  // District
+  const [districts, setDistricts] = useState([]);
+  const [selectedDistrictId, setSelectedDistrictId] = useState("");
+
+  // Upazila
+  const [upazilas, setUpazilas] = useState([]);
+
+  // Fetch divisions data
+  useEffect(() => {
+    const fetchDivisions = async () => {
+      const divisions = await getDivision();
+
+      setDivisions(divisions.data);
+    };
+    fetchDivisions();
+  }, []);
+
+  // Fetch districts data
+  useEffect(() => {
+    const fetchDistricts = async () => {
+      if (selectedDivisionId) {
+        const districts = await getDistrict(selectedDivisionId);
+        setDistricts(districts.data.districts);
+      }
+    };
+    fetchDistricts();
+  }, [selectedDivisionId]);
+
+  // Fetch upazilas data
+  useEffect(() => {
+    const fetchUpazilas = async () => {
+      if (selectedDistrictId) {
+        const upazilas = await getUpazila(selectedDistrictId);
+        setUpazilas(upazilas.data);
+      }
+    };
+    fetchUpazilas();
+  }, [selectedDistrictId]);
+
   const onSubmit = (data) => {
-    console.log(data);
-    // Handle form submission here
+    const { bloodGroup, plasma, division, district, upazila } = data;
+
+    router.push(
+      `/find-blood/results?bloodGroup=${bloodGroup}&plasma=${plasma}&division=${division}&district=${district}&upazila=${upazila}`
+    );
   };
 
   return (
@@ -46,14 +99,14 @@ export default function RecipientForm() {
                 <option value="" disabled>
                   Blood Group
                 </option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
+                <option value="A_POSITIVE">A+</option>
+                <option value="A_NEGATIVE">A-</option>
+                <option value="B_POSITIVE">B+</option>
+                <option value="B_NEGATIVE">B-</option>
+                <option value="O_POSITIVE">O+</option>
+                <option value="O_NEGATIVE">O-</option>
+                <option value="AB_POSITIVE">AB+</option>
+                <option value="AB_NEGATIVE">AB-</option>
               </select>
               {errors.bloodGroup && (
                 <p className="text-red-500 text-sm">
@@ -83,13 +136,21 @@ export default function RecipientForm() {
               <select
                 {...register("division", { required: "Division is required" })}
                 className="w-full p-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 appearance-none"
-                defaultValue=""
+                onChange={(e) => {
+                  const selectedDivision = divisions.find(
+                    (div) => div.name === e.target.value
+                  );
+                  setSelectedDivisionId(
+                    selectedDivision ? selectedDivision._id : ""
+                  );
+                }}
               >
-                <option value="" disabled>
-                  Division
-                </option>
-                <option value="division1">Division 1</option>
-                <option value="division2">Division 2</option>
+                <option value="">Division</option>
+                {divisions.map(({ _id, name }) => (
+                  <option key={_id} value={name}>
+                    {name}
+                  </option>
+                ))}
               </select>
               {errors.division && (
                 <p className="text-red-500 text-sm">
@@ -103,13 +164,21 @@ export default function RecipientForm() {
               <select
                 {...register("district", { required: "District is required" })}
                 className="w-full p-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 appearance-none"
-                defaultValue=""
+                onChange={(e) => {
+                  const selectedDistrict = districts.find(
+                    (dist) => dist.district === e.target.value
+                  );
+                  setSelectedDistrictId(
+                    selectedDistrict ? selectedDistrict.districtId : ""
+                  );
+                }}
               >
-                <option value="" disabled>
-                  District
-                </option>
-                <option value="district1">District 1</option>
-                <option value="district2">District 2</option>
+                <option value="">District</option>
+                {districts.map(({ districtId, district }) => (
+                  <option key={districtId} value={district}>
+                    {district}
+                  </option>
+                ))}
               </select>
               {errors.district && (
                 <p className="text-red-500 text-sm">
@@ -128,9 +197,11 @@ export default function RecipientForm() {
                 <option value="" disabled>
                   Upazila
                 </option>
-                <option value="upazila1">Upazila 1</option>
-                <option value="upazila2">Upazila 2</option>
-                <option value="upazila3">Upazila 3</option>
+                {upazilas.map(({ _id, name }) => (
+                  <option key={_id} value={name}>
+                    {name}
+                  </option>
+                ))}
               </select>
               {errors.upazila && (
                 <p className="text-red-500 text-sm">{errors.upazila.message}</p>
