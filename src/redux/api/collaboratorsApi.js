@@ -19,6 +19,24 @@ const collaboratorsApi = baseApi.injectEndpoints({
       }),
       providesTags: ["collaborator"],
     }),
+
+    updateCollaborator: build.mutation({
+      query: ({ id, body }) => ({
+        url: `/api/collaborator/${id}`,
+        method: "PUT",
+        contentType: "application/json",
+        body,
+      }),
+      invalidatesTags: ["collaborator"],
+    }),
+
+    deleteCollaborator: build.mutation({
+      query: (id) => ({
+        url: `/api/collaborator/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["collaborator"],
+    }),
   }),
 });
 
