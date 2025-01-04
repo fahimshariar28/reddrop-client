@@ -1,5 +1,5 @@
 import { authKey } from "@/constants/authKey";
-import { getLocalStorage } from "@/services/utils/localStorage";
+import { getLocalStorage, storeLocalStorage } from "@/services/utils/localStorage";
 import axios from "axios";
 
 const axiosInstance = axios.create();
@@ -27,13 +27,34 @@ axiosInstance.interceptors.request.use(
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
   function (response) {
-    const responseData = response.data;
-    return responseData;
-  },
-  function (error) {
-    const responseObj = error.response.data;
+    return {
+      success: response.data.success,
+      message: response.data.message,
+      statusCode: response.data.statusCode,
+      data: response.data.data
 
-    return responseObj;
+    };
+  },
+  async function (error) {
+
+    const config = error.config;
+
+    if (error.response.status === 500 && !config.sent) {
+      config.sent = true;
+      const response = await axiosInstance.getNewAccessToken();
+      const accessToken = response.data.data.accessToken;
+      config.headers["Authorization"] = accessToken;
+      storeLocalStorage(authKey, accessToken);
+      return axiosInstance(config);
+    } else {
+      const responseObj = {
+        statusCode: error.response.data.statusCode,
+        success: error.response.data.success,
+        message: error.response.data.message,
+      };
+
+      return responseObj;
+    }
   }
 );
 
