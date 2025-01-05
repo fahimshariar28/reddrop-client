@@ -17,6 +17,11 @@ export const getUserInfo = () => {
   return decodedData;
 };
 
+export const isUserLoggedIn = () => {
+  const token = getLocalStorage(authKey);
+  return !!token
+};
+
 export const removeUserInfo = () => {
   return removeLocalStorage(authKey);
 };
