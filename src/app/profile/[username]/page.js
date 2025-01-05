@@ -5,6 +5,8 @@ import Image from "next/image";
 import RequestModal from "@/components/Request/RequestModal";
 import { useGetProfileQuery } from "@/redux/api/userApi";
 import LoadingComponent from "@/components/LoadingComponent/LoadingComponent";
+import { getUserInfo } from "@/services/actions/authServices";
+import toast from "react-hot-toast";
 
 export default function ProfileView({ params }) {
 
@@ -12,7 +14,31 @@ export default function ProfileView({ params }) {
   const [lastDonationDate, setLastDonationDate] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const user = getUserInfo();
+
   const { data: profile, isLoading } = useGetProfileQuery(paramsData.username);
+
+  const hasRecentOrAcceptedRequest = () => {
+    const hasRecentPendingRequest = profile.requestReceived.some((request) => {
+      const isPending =
+        request.receiverId === user.id &&
+        request.requestStatus.some((status) => status.status === "pending");
+      if (isPending) {
+        const requestTime = new Date(request.requestStatus[0].time); // Assuming the first status is relevant
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        return requestTime >= oneWeekAgo;
+      }
+      return false;
+    });
+
+    const hasAcceptedRequest = profile.requestReceived.some(
+      (request) => request.requestStatus[0]?.status === "accepted"
+    );
+
+    return { hasRecentPendingRequest, hasAcceptedRequest };
+  };
+
 
   // Determine the closest donation date
   useEffect(() => {
@@ -72,7 +98,16 @@ export default function ProfileView({ params }) {
         </div>
         <button
           className="bg-black text-white px-4 py-2 rounded-md hover:bg-gray-800"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            const { hasRecentPendingRequest, hasAcceptedRequest } = hasRecentOrAcceptedRequest(profile, user.id);
+            if (hasAcceptedRequest) {
+              toast.error(`${profile.name} has already accepted a request. Please try someone else.`);
+            } else if (hasRecentPendingRequest) {
+              toast.error("You have already requested. Please wait for the response.");
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
         >
           Request
         </button>
@@ -107,6 +142,8 @@ export default function ProfileView({ params }) {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         profileName={profile.name}
+        donorId={profile._id}
+        bloodGroup={profile.bloodGroup}
       />
     </div>
   );
